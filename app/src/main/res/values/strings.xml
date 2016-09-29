@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">The Inventory</string>
+
+
+
+    <!-- Label for empty textview [CHAR LIMIT 20] -->
+    <string name="empty_view_text" translatable="true">Add a product to get started</string>
+    <string name="title_activity_inventory">InventoryActivity</string>
+
+    <!-- Label for sale button [CHAR LIMIT 20] -->
+    <string name="sale_button" translatable="true">Sale</string>
+
+
+    <!-- Detail View Strings -->
+
+    <!-- Title for edit product [CHAR LIMIT 20] -->
+    <string name="title_edit_product" translatable="true">Edit Product</string>
+
+    <!-- Title for new product [CHAR LIMIT 20] -->
+    <string name="title_new_product" translatable="true">New Product</string>
+
+    <!-- Menu item done [CHAR LIMIT 20]-->
+    <string name="menu_done" translatable="true">Done</string>
+
+    <!-- Menu item delete [CHAR LIMIT 20]-->
+    <string name="menu_delete" translatable="true">Delete</string>
+
+    <!-- Label for Overview [CHAR LIMIT 20]-->
+    <string name="label_overview" translatable="true">Overview</string>
+
+    <!-- Hint for name of product [CHAR LIMIT 20] -->
+    <string name="hint_name" translatable="true">Name</string>
+
+    <!-- Hint for description of product [CHAR LIMIT 20] -->
+    <string name="hint_description" translatable="true">Description</string>
+
+    <!-- Label for Price [CHAR LIMIT 20] -->
+    <string name="label_price" translatable="true">Price</string>
+
+    <!-- Hint for Price [CHAR LIMIT 20] -->
+    <string name="hint_price" translatable="true">$$$</string>
+
+    <!-- Label for Manufacturer [CHAR LIMIT 20] -->
+    <string name="label_manufacturer" translatable="true">Manufacturer</string>
+
+    <!-- Hint for Manufacturer name [CHAR LIMIT 20] -->
+    <string name="hint_manufacturer_name" translatable="true">Manufacturer name</string>
+
+    <!-- Hint for Manufacturer phone [CHAR LIMIT 20] -->
+    <string name="hint_manufacturer_phone" translatable="false">###-###-####</string>
+
+    <!-- Hint for Manufacturer email [CHAR LIMIT 20] -->
+    <string name="hint_manufacturer_email" translatable="false">manufacturer@example.com</string>
+
+    <!-- Label for In stock [CHAR LIMIT 20] -->
+    <string name="label_in_stock" translatable="true">In Stock</string>
+
+    <!-- Hint for In stock [CHAR LIMIT 20] -->
+    <string name="hint_out_of_stock" translatable="true">Out Of Stock</string>
+
+    <!-- Label for Order button [CHAR LIMIT 20] -->
+    <string name="label_order" translatable="true">Order</string>
+
+    <!-- Unsaved changes dialog -->
+    <string name="unsaved_changes_dialog_message" translatable="true">Discard changes and quit editing?</string>
+    <string name="unsaved_changes_discard" translatable="true">Discard</string>
+    <string name="unsaved_changes_keep_editing" translatable="true">Keep Editing</string>
+
+    <!-- Delete confirmation dialog -->
+    <string name="delete_product_message" translatable="true">Delete this product?</string>
+    <string name="delete_product_option_delete" translatable="true">Delete</string>
+
+    <string name="delete_product_failed_message" translatable="true">Delete failed</string>
+    <string name="delete_product_successful_message" translatable="true">Product deleted</string>
+
+
+</resources>
