@@ -142,10 +142,12 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
         mDecreaseStockButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int quantity = Integer.parseInt(mCurrentQuantityEdittext.getText().toString())-1;
-                if(quantity > -1) {
-                    mCurrentQuantityEdittext.setText(Integer.toString(quantity));
-                }else{
+                if(!mCurrentQuantityEdittext.getText().toString().isEmpty()) {
+                    int quantity = Integer.parseInt(mCurrentQuantityEdittext.getText().toString()) - 1;
+                    if (quantity > -1) {
+                        mCurrentQuantityEdittext.setText(Integer.toString(quantity));
+                    }
+                }else {
                     mCurrentQuantityEdittext.setText(0);
                 }
             }
@@ -289,10 +291,14 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
         String currentQuantity = mCurrentQuantityEdittext.getText().toString().trim();
         byte[] productImageBitmap = convertToByteArray();
 
-        if(validateData(name)&&
-                validateData(price)&&
-                validateData(manufacturerName)&&
-                validateData(currentQuantity)) return;
+        if(validateData(name)||
+                validateData(price)||
+                validateData(manufacturerName)||
+                validateData(currentQuantity)) {
+            Toast.makeText(this, R.string.error_saving_entry, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if(validateData(currentQuantity)){
             int quantity = Integer.parseInt(currentQuantity);
             if(quantity < 0){
@@ -455,8 +461,10 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
                 mManufacturerEmailEdittext.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_MANUFACTURER_EMAIL)));
 
                 byte[] image = cursor.getBlob(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_IMAGE));
-                mCurrentPhotoBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-                mProductImage.setImageBitmap(mCurrentPhotoBitmap);
+                if(image != null) {
+                    mCurrentPhotoBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    mProductImage.setImageBitmap(mCurrentPhotoBitmap);
+                }
             }
         }
     }

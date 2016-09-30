@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name">The Inventory</string>
 
 
@@ -10,6 +10,10 @@
     <!-- Label for sale button [CHAR LIMIT 20] -->
     <string name="sale_button" translatable="true">Sale</string>
 
+
+    <!-- List Item Strings -->
+    <string name="price">$<xliff:g id="price_value" example="9.99">%s</xliff:g></string>
+    <string name="in_stock_suffix"><xliff:d id="in_stock">%s in stock</xliff:d></string>
 
     <!-- Detail View Strings -->
 
@@ -81,6 +85,7 @@
     <!-- Updated -->
     <string name="update_failed" translatable="true">Failed to update product</string>
     <string name="update_successful" translatable="true">Product updated</string>
+    <string name="error_saving_entry" translatable="true">There seems to be problem</string>
 
     <!-- Stock -->
     <string name="out_of_stock_message" translatable="true">Out of stock</string>

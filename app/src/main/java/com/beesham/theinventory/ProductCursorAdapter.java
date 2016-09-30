@@ -46,8 +46,8 @@ public class ProductCursorAdapter extends CursorAdapter{
         saleButton = (Button) view.findViewById(R.id.sale_button);
 
         title.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME)));
-        currentQuantity.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY)));
-        price.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE)));
+        currentQuantity.setText(context.getString(R.string.in_stock_suffix, cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY))));
+        price.setText(context.getString(R.string.price, cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE))));
 
         saleButton.setOnClickListener(new View.OnClickListener() {
             @Override
