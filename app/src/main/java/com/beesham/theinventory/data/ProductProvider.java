@@ -8,11 +8,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by Beesham on 9/27/2016.
  */
 public class ProductProvider extends ContentProvider {
+
+    private static final String LOG_TAG = ProductProvider.class.getSimpleName();
 
     private ProductDbHelper mProductDbHelper;
 
