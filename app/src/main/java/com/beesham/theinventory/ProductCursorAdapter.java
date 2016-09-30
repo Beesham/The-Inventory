@@ -1,10 +1,13 @@
 package com.beesham.theinventory;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
@@ -25,14 +28,26 @@ public class ProductCursorAdapter extends CursorAdapter{
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, final Cursor cursor) {
         TextView title = (TextView) view.findViewById(R.id.title_textview);
-        TextView currentQuantity = (TextView) view.findViewById(R.id.current_quantity_textview);
+        final TextView currentQuantity = (TextView) view.findViewById(R.id.current_quantity_textview);
         TextView price = (TextView) view.findViewById(R.id.price_textview);
+        Button  saleButton = (Button) view.findViewById(R.id.sale_button);
 
         title.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME)));
         currentQuantity.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY)));
         price.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE)));
         //TODO: implement the other details
+
+
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ContentValues values = new ContentValues();
+                values.put(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY, Integer.toString(Integer.parseInt(currentQuantity.getText().toString())-1));
+                context.getContentResolver().update(ContentUris.withAppendedId(ProductContract.ProductEntry.CONTENT_URI,
+                        cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY)), values, null, null);
+            }
+        });
     }
 }

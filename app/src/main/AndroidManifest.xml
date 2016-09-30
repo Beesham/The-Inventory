@@ -17,13 +17,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProductDetailsActivity" />
+        <activity android:name=".ProductDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".InventoryActivity"/>
+        </activity>
 
         <provider
             android:authorities="com.beesham.theinventory.products"
             android:exported="false"
             android:name=".data.ProductProvider"/>
+            </application>
 
-    </application>
-
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true"/>
 </manifest>

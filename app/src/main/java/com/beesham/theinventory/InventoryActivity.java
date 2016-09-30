@@ -1,6 +1,7 @@
 package com.beesham.theinventory;
 
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.design.widget.FloatingActionButton;
@@ -11,16 +12,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.beesham.theinventory.data.ProductContract;
-import com.beesham.theinventory.data.ProductDbHelper;
 
 public class InventoryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int PRODUCT_LOADER = 1;
-
-    private ProductDbHelper mProductDbHelper;
+    private static final int PRODUCT_LOADER_ID = 1;
 
     private ListView mListView;
     private ProductCursorAdapter mCursorAdapter;
@@ -31,8 +31,6 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
 
-        mProductDbHelper = new ProductDbHelper(this);
-
         mCursor = null;
         mCursorAdapter = new ProductCursorAdapter(this, mCursor);
 
@@ -41,7 +39,7 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
 
         mListView.setAdapter(mCursorAdapter);
 
-        getSupportLoaderManager().initLoader(PRODUCT_LOADER, null, this);
+        getSupportLoaderManager().initLoader(PRODUCT_LOADER_ID, null, this);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -52,7 +50,6 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
             }
         });
 
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +58,6 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
                 startActivity(intent);
             }
         });
-
     }
 
     @Override
@@ -74,7 +70,7 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
         };
 
         switch(id) {
-            case(PRODUCT_LOADER):
+            case(PRODUCT_LOADER_ID):
                 return new CursorLoader(this,
                         ProductContract.ProductEntry.CONTENT_URI,
                         projection,
@@ -83,7 +79,6 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
                         null);
             default:
                 return null;
-
         }
     }
 

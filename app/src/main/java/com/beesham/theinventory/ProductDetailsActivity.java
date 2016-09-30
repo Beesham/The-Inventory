@@ -2,36 +2,61 @@ package com.beesham.theinventory;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.beesham.theinventory.data.ProductContract;
 import com.beesham.theinventory.data.ProductDbHelper;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ProductDetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String LOG_TAG = ProductDetailsActivity.class.getSimpleName();
 
     private static final int PRODUCT_LOADER_ID = 1;
 
-    EditText mNameEdittext;
-    EditText mDescriptionEdittext;
-    EditText mPriceEdittext;
-    EditText mManufacturerNameEdittext;
-    EditText mManufacturerPhoneEdittext;
-    EditText mManufacturerEmailEdittext;
-    EditText mCurrentQuantityEdittext;
+    private static final int REQUEST_IMAGE_CAPTURE = 2;
+    private Bitmap mCurrentPhotoBitmap;
+
+    private EditText mNameEdittext;
+    private EditText mDescriptionEdittext;
+    private EditText mPriceEdittext;
+    private EditText mManufacturerNameEdittext;
+    private EditText mManufacturerPhoneEdittext;
+    private EditText mManufacturerEmailEdittext;
+    private EditText mCurrentQuantityEdittext;
+    private ImageView mProductImage;
+    private Button mIncreaseStockButton;
+    private Button mDecreaseStockButton;
 
     private Uri mUri;
     private boolean mProductHasChanged = false;
@@ -55,7 +80,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
             invalidateOptionsMenu();
         }else{
             setTitle(getString(R.string.title_edit_product));
-            invalidateOptionsMenu();
+            getSupportLoaderManager().initLoader(PRODUCT_LOADER_ID, null, this);
         }
 
         mNameEdittext = (EditText) findViewById(R.id.name_edittext);
@@ -65,6 +90,9 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
         mManufacturerPhoneEdittext = (EditText) findViewById(R.id.manufacturer_phone_edittext);
         mManufacturerEmailEdittext = (EditText) findViewById(R.id.manufacturer_email_edittext);
         mCurrentQuantityEdittext = (EditText) findViewById(R.id.current_quantity_edittext);
+        mProductImage = (ImageView) findViewById(R.id.imageview);
+        mIncreaseStockButton = (Button) findViewById(R.id.increase_stock_button);
+        mDecreaseStockButton = (Button) findViewById(R.id.decrease_stock_button);
 
         mNameEdittext.setOnTouchListener(mTouchListener);
         mDescriptionEdittext.setOnTouchListener(mTouchListener);
@@ -73,7 +101,41 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
         mManufacturerPhoneEdittext.setOnTouchListener(mTouchListener);
         mManufacturerEmailEdittext.setOnTouchListener(mTouchListener);
         mCurrentQuantityEdittext.setOnTouchListener(mTouchListener);
+        mCurrentQuantityEdittext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                mProductHasChanged = true;
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
+        mProductImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dispatchTakePictureIntent();
+            }
+        });
+
+        mIncreaseStockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCurrentQuantityEdittext.setText(Integer.toString(Integer.parseInt(mCurrentQuantityEdittext.getText().toString())+1));
+            }
+        });
+
+        mDecreaseStockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCurrentQuantityEdittext.setText(Integer.toString(Integer.parseInt(mCurrentQuantityEdittext.getText().toString())-1));
+            }
+        });
     }
 
     @Override
@@ -104,7 +166,6 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
 
             case R.id.delete:
                 showDeleteConfirmationDialog();
-                finish();
                 return true;
 
             case android.R.id.home:
@@ -164,17 +225,33 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
         String manufacturerPhone = mManufacturerPhoneEdittext.getText().toString().trim();
         String manufacturerEmail = mManufacturerEmailEdittext.getText().toString().trim();
         String currentQuantity = mCurrentQuantityEdittext.getText().toString().trim();
+        byte[] productImageBitmap = convertToByteArray();
 
         ContentValues values = new ContentValues();
         values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME, name);
         values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_DESCRIPTION, description);
+        values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_IMAGE, productImageBitmap);
         values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE, price);
         values.put(ProductContract.ProductEntry.COLUMN_MANUFACTURER, manufacturerName);
         values.put(ProductContract.ProductEntry.COLUMN_MANUFACTURER_PHONE, manufacturerPhone);
         values.put(ProductContract.ProductEntry.COLUMN_MANUFACTURER_EMAIL, manufacturerEmail);
         values.put(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY, currentQuantity);
 
-        Uri newUri = getContentResolver().insert(ProductContract.ProductEntry.CONTENT_URI, values);
+        if(mUri == null) {
+            Uri newUri = getContentResolver().insert(ProductContract.ProductEntry.CONTENT_URI, values);
+        }else{
+            int rowId = getContentResolver().update(mUri, values, null, null);
+        }
+    }
+
+    private byte[] convertToByteArray(){
+        byte[] bytes = null;
+        if(mProductImage != null){
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            mCurrentPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            bytes = out.toByteArray();
+        }
+        return bytes;
     }
 
     private void showDeleteConfirmationDialog() {
@@ -215,6 +292,22 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
         finish();
     }
 
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            mCurrentPhotoBitmap = (Bitmap) extras.get("data");
+            mProductImage.setImageBitmap(mCurrentPhotoBitmap);
+        }
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
@@ -222,6 +315,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
                 ProductContract.ProductEntry._ID,
                 ProductContract.ProductEntry.COLUMN_PRODUCT_NAME,
                 ProductContract.ProductEntry.COLUMN_PRODUCT_DESCRIPTION,
+                ProductContract.ProductEntry.COLUMN_PRODUCT_IMAGE,
                 ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY,
                 ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE,
                 ProductContract.ProductEntry.COLUMN_MANUFACTURER,
@@ -248,6 +342,10 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
                 mManufacturerNameEdittext.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_MANUFACTURER)));
                 mManufacturerPhoneEdittext.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_MANUFACTURER_PHONE)));
                 mManufacturerEmailEdittext.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_MANUFACTURER_EMAIL)));
+
+                byte[] image = cursor.getBlob(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_IMAGE));
+                mCurrentPhotoBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                mProductImage.setImageBitmap(mCurrentPhotoBitmap);
             }
         }
     }

@@ -30,6 +30,7 @@ public class ProductContract {
         public static final String _ID = BaseColumns._ID;
         public static final String COLUMN_PRODUCT_NAME = "name";
         public static final String COLUMN_PRODUCT_DESCRIPTION = "description";
+        public static final String COLUMN_PRODUCT_IMAGE = "image";
         public static final String COLUMN_PRODUCT_PRICE = "price";
         public static final String COLUMN_CURRENT_QUANTITY = "current_quantity";
         public static final String COLUMN_MANUFACTURER = "manufacturer";

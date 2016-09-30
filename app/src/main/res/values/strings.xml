@@ -53,7 +53,7 @@
     <string name="hint_manufacturer_email" translatable="false">manufacturer@example.com</string>
 
     <!-- Label for In stock [CHAR LIMIT 20] -->
-    <string name="label_in_stock" translatable="true">In Stock</string>
+    <string name="label_stock" translatable="true">Stock</string>
 
     <!-- Hint for In stock [CHAR LIMIT 20] -->
     <string name="hint_out_of_stock" translatable="true">Out Of Stock</string>
