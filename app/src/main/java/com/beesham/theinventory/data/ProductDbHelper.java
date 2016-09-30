@@ -34,6 +34,6 @@ public class ProductDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        //Only one version of the database is used so there is no need to implement an upgrade
     }
 }

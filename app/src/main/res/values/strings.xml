@@ -13,7 +13,7 @@
 
     <!-- List Item Strings -->
     <string name="price">$<xliff:g id="price_value" example="9.99">%s</xliff:g></string>
-    <string name="in_stock_suffix"><xliff:d id="in_stock">%s in stock</xliff:d></string>
+    <string name="in_stock_suffix">in stock</string>
 
     <!-- Detail View Strings -->
 

@@ -46,6 +46,16 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 tools:text="9"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/in_stock_suffix"
+                android:paddingLeft="4dp"
+                android:layout_alignTop="@+id/current_quantity_textview"
+                android:layout_toRightOf="@+id/current_quantity_textview"
+                android:layout_toEndOf="@+id/current_quantity_textview" />
+
         </RelativeLayout>
     </LinearLayout>
 
