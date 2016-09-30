@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.beesham.theinventory.data.ProductContract;
 
@@ -47,19 +48,23 @@ public class ProductCursorAdapter extends CursorAdapter{
         title.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME)));
         currentQuantity.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY)));
         price.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE)));
-        //TODO: implement the other details
 
         saleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ContentValues values = new ContentValues();
-                values.put(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY, Integer.toString(Integer.parseInt(currentQuantity.getText().toString())-1));
-                context.getContentResolver().update(
-                        ContentUris.withAppendedId(ProductContract.ProductEntry.CONTENT_URI,
-                                Long.parseLong(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry._ID)))),
-                        values,
-                        null,
-                        null);
+                int quantity = Integer.parseInt(currentQuantity.getText().toString())-1;
+                if(quantity > -1){
+                    values.put(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY, Integer.toString(quantity));
+                    context.getContentResolver().update(
+                            ContentUris.withAppendedId(ProductContract.ProductEntry.CONTENT_URI,
+                                    Long.parseLong(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry._ID)))),
+                            values,
+                            null,
+                            null);
+                }else{
+                    Toast.makeText(context, R.string.out_of_stock_message, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

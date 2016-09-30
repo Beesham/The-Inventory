@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
@@ -31,6 +32,8 @@ import android.widget.Toast;
 
 import com.beesham.theinventory.data.ProductContract;
 import com.beesham.theinventory.data.ProductDbHelper;
+
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,6 +60,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
     private ImageView mProductImage;
     private Button mIncreaseStockButton;
     private Button mDecreaseStockButton;
+    private Button mOrderMoreButton;
 
     private Uri mUri;
     private boolean mProductHasChanged = false;
@@ -93,6 +97,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
         mProductImage = (ImageView) findViewById(R.id.imageview);
         mIncreaseStockButton = (Button) findViewById(R.id.increase_stock_button);
         mDecreaseStockButton = (Button) findViewById(R.id.decrease_stock_button);
+        mOrderMoreButton = (Button) findViewById(R.id.order_more);
 
         mNameEdittext.setOnTouchListener(mTouchListener);
         mDescriptionEdittext.setOnTouchListener(mTouchListener);
@@ -126,14 +131,66 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
         mIncreaseStockButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentQuantityEdittext.setText(Integer.toString(Integer.parseInt(mCurrentQuantityEdittext.getText().toString())+1));
+                if(!mCurrentQuantityEdittext.getText().toString().isEmpty()) {
+                    mCurrentQuantityEdittext.setText(Integer.toString(Integer.parseInt(mCurrentQuantityEdittext.getText().toString()) + 1));
+                }else{
+                    mCurrentQuantityEdittext.setText(Integer.toString(1));
+                }
             }
         });
 
         mDecreaseStockButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentQuantityEdittext.setText(Integer.toString(Integer.parseInt(mCurrentQuantityEdittext.getText().toString())-1));
+                int quantity = Integer.parseInt(mCurrentQuantityEdittext.getText().toString())-1;
+                if(quantity > -1) {
+                    mCurrentQuantityEdittext.setText(Integer.toString(quantity));
+                }else{
+                    mCurrentQuantityEdittext.setText(0);
+                }
+            }
+        });
+
+        mOrderMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ProductDetailsActivity.this);
+                builder.setMessage(R.string.dialog_call_or_emial);
+                builder.setPositiveButton(R.string.dialog_call_option, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Intent.ACTION_DIAL);
+                        intent.setData(Uri.parse("tel:" + mManufacturerPhoneEdittext.getText().toString()));
+                        if (intent.resolveActivity(getPackageManager()) != null) {
+                            startActivity(intent);
+                        }
+                    }
+                });
+
+                builder.setNegativeButton(R.string.dialog_email_option, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Intent.ACTION_SENDTO);
+                        intent.setData(Uri.parse("mailto:"));
+                        intent.putExtra(Intent.EXTRA_EMAIL, new String [] {mManufacturerEmailEdittext.getText().toString()});
+                        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.dialog_mail_subject));
+                        if (intent.resolveActivity(getPackageManager()) != null) {
+                            startActivity(intent);
+                        }
+                    }
+                });
+
+                builder.setNeutralButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(dialogInterface != null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
     }
@@ -173,7 +230,16 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
                     NavUtils.navigateUpFromSameTask(ProductDetailsActivity.this);
                     return true;
                 }
-                unsavedChangesHelper();
+
+                DialogInterface.OnClickListener discardButtonClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        NavUtils.navigateUpFromSameTask(ProductDetailsActivity.this);
+                    }
+                };
+
+                showUnsavedChangesDialog(discardButtonClickListener);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -185,19 +251,16 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
             return;
         }
 
-        unsavedChangesHelper();
-    }
-
-    private void unsavedChangesHelper(){
         DialogInterface.OnClickListener discardButtonClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                NavUtils.navigateUpFromSameTask(ProductDetailsActivity.this);
+                finish();
             }
         };
 
         showUnsavedChangesDialog(discardButtonClickListener);
     }
+
 
     private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -217,7 +280,6 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
     }
 
     private void saveEntry() {
-        //TODO: data validation
         String name = mNameEdittext.getText().toString().trim();
         String description = mDescriptionEdittext.getText().toString().trim();
         String price = mPriceEdittext.getText().toString().trim();
@@ -226,6 +288,18 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
         String manufacturerEmail = mManufacturerEmailEdittext.getText().toString().trim();
         String currentQuantity = mCurrentQuantityEdittext.getText().toString().trim();
         byte[] productImageBitmap = convertToByteArray();
+
+        if(validateData(name)&&
+                validateData(price)&&
+                validateData(manufacturerName)&&
+                validateData(currentQuantity)) return;
+        if(validateData(currentQuantity)){
+            int quantity = Integer.parseInt(currentQuantity);
+            if(quantity < 0){
+                Toast.makeText(this, R.string.invalid_quantity, Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
 
         ContentValues values = new ContentValues();
         values.put(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME, name);
@@ -239,14 +313,35 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
 
         if(mUri == null) {
             Uri newUri = getContentResolver().insert(ProductContract.ProductEntry.CONTENT_URI, values);
+            if (newUri == null) {
+                Toast.makeText(this, getString(R.string.insert_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, getString(R.string.insert_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
         }else{
             int rowId = getContentResolver().update(mUri, values, null, null);
+            if (rowId == -1) {
+                Toast.makeText(this, getString(R.string.update_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, getString(R.string.update_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
         }
+    }
+
+    private boolean validateData(String data){
+        if(TextUtils.isEmpty(data)){
+            return true;
+        }
+        return false;
     }
 
     private byte[] convertToByteArray(){
         byte[] bytes = null;
-        if(mProductImage != null){
+        if(mCurrentPhotoBitmap != null){
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             mCurrentPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             bytes = out.toByteArray();
@@ -306,6 +401,22 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
             mCurrentPhotoBitmap = (Bitmap) extras.get("data");
             mProductImage.setImageBitmap(mCurrentPhotoBitmap);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        byte[] bytes = convertToByteArray();
+        if(bytes != null)   outState.putByteArray("image", bytes);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        byte[] bytes = savedInstanceState.getByteArray("image");
+        if(bytes != null)
+            mCurrentPhotoBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            mProductImage.setImageBitmap(mCurrentPhotoBitmap);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override

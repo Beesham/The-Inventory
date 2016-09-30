@@ -89,7 +89,29 @@ public class ProductProvider extends ContentProvider {
     private Uri insertProduct(Uri uri, ContentValues contentValues){
         SQLiteDatabase db = mProductDbHelper.getWritableDatabase();
 
-        //TODO: data validation
+        if(contentValues.containsKey(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME)){
+            if (contentValues.getAsString(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME) == null) {
+                throw new IllegalArgumentException("Product requires name");
+            }
+        }
+
+        if(contentValues.containsKey(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE)){
+            if (contentValues.getAsString(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE) == null) {
+                throw new IllegalArgumentException("Product requires price");
+            }
+        }
+
+        if(contentValues.containsKey(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY)){
+            if (contentValues.getAsString(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY) == null) {
+                throw new IllegalArgumentException("Product requires quantity");
+            }
+        }
+
+        if(contentValues.containsKey(ProductContract.ProductEntry.COLUMN_MANUFACTURER)){
+            if (contentValues.getAsString(ProductContract.ProductEntry.COLUMN_MANUFACTURER) == null) {
+                throw new IllegalArgumentException("Product requires manufacturer name");
+            }
+        }
 
         long id = db.insert(ProductContract.ProductEntry.TABLE_NAME,
                 null,
@@ -150,7 +172,29 @@ public class ProductProvider extends ContentProvider {
 
     private int updateProduct(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs){
 
-        //TODO: validate data
+        if(contentValues.containsKey(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME)){
+            if (contentValues.getAsString(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME) == null) {
+                throw new IllegalArgumentException("Product requires name");
+            }
+        }
+
+        if(contentValues.containsKey(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE)){
+            if (contentValues.getAsString(ProductContract.ProductEntry.COLUMN_PRODUCT_PRICE) == null) {
+                throw new IllegalArgumentException("Product requires price");
+            }
+        }
+
+        if(contentValues.containsKey(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY)){
+            if (contentValues.getAsString(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY) == null) {
+                throw new IllegalArgumentException("Product requires quantity");
+            }
+        }
+
+        if(contentValues.containsKey(ProductContract.ProductEntry.COLUMN_MANUFACTURER)){
+            if (contentValues.getAsString(ProductContract.ProductEntry.COLUMN_MANUFACTURER) == null) {
+                throw new IllegalArgumentException("Product requires manufacturer name");
+            }
+        }
 
         int rowId = mProductDbHelper.getWritableDatabase().
                 update(ProductContract.ProductEntry.TABLE_NAME,

@@ -52,14 +52,14 @@
     <!-- Hint for Manufacturer email [CHAR LIMIT 20] -->
     <string name="hint_manufacturer_email" translatable="false">manufacturer@example.com</string>
 
-    <!-- Label for In stock [CHAR LIMIT 20] -->
+    <!-- Label for stock [CHAR LIMIT 20] -->
     <string name="label_stock" translatable="true">Stock</string>
 
-    <!-- Hint for In stock [CHAR LIMIT 20] -->
+    <!-- Hint for stock [CHAR LIMIT 20] -->
     <string name="hint_out_of_stock" translatable="true">Out Of Stock</string>
 
     <!-- Label for Order button [CHAR LIMIT 20] -->
-    <string name="label_order" translatable="true">Order</string>
+    <string name="label_order" translatable="true">Order More</string>
 
     <!-- Unsaved changes dialog -->
     <string name="unsaved_changes_dialog_message" translatable="true">Discard changes and quit editing?</string>
@@ -73,5 +73,23 @@
     <string name="delete_product_failed_message" translatable="true">Delete failed</string>
     <string name="delete_product_successful_message" translatable="true">Product deleted</string>
 
+
+    <!-- Insert -->
+    <string name="insert_failed" translatable="true">Failed to enter product</string>
+    <string name="insert_successful" translatable="true">Product added</string>
+
+    <!-- Updated -->
+    <string name="update_failed" translatable="true">Failed to update product</string>
+    <string name="update_successful" translatable="true">Product updated</string>
+
+    <!-- Stock -->
+    <string name="out_of_stock_message" translatable="true">Out of stock</string>
+    <string name="invalid_quantity" translatable="true">Invalid quantity</string>
+
+    <!-- Re-ordering -->
+    <string name="dialog_call_or_emial" translatable="true">Would you like to call or email the manufacturer?</string>
+    <string name="dialog_call_option" translatable="true">Call</string>
+    <string name="dialog_email_option" translatable="true">Email</string>
+    <string name="dialog_mail_subject" translatable="true">Re-order</string>
 
 </resources>
