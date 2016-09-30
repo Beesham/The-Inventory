@@ -1,7 +1,6 @@
 package com.beesham.theinventory;
 
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.design.widget.FloatingActionButton;
@@ -12,9 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.beesham.theinventory.data.ProductContract;
 
@@ -22,21 +19,18 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
 
     private static final int PRODUCT_LOADER_ID = 1;
 
-    private ListView mListView;
     private ProductCursorAdapter mCursorAdapter;
-    private Cursor mCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
 
-        mCursor = null;
-        mCursorAdapter = new ProductCursorAdapter(this, mCursor);
-
-        mListView = (ListView) findViewById(R.id.list);
+        ListView mListView = (ListView) findViewById(R.id.list);
         mListView.setEmptyView(findViewById(R.id.empty_view));
 
+        Cursor mCursor = null;
+        mCursorAdapter = new ProductCursorAdapter(this, mCursor);
         mListView.setAdapter(mCursorAdapter);
 
         getSupportLoaderManager().initLoader(PRODUCT_LOADER_ID, null, this);

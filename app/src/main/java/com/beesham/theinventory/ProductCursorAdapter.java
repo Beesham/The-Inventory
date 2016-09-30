@@ -22,10 +22,7 @@ public class ProductCursorAdapter extends CursorAdapter{
 
     private static final String LOG_TAG = ProductCursorAdapter.class.getSimpleName();
 
-    private TextView title;
     private TextView currentQuantity;
-    private TextView price;
-    private Button  saleButton;
 
     public ProductCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
@@ -36,14 +33,12 @@ public class ProductCursorAdapter extends CursorAdapter{
         return LayoutInflater.from(context).inflate(R.layout.list_item, viewGroup, false);
     }
 
-
-
     @Override
     public void bindView(View view, final Context context, final Cursor cursor) {
-        title = (TextView) view.findViewById(R.id.title_textview);
+        TextView title = (TextView) view.findViewById(R.id.title_textview);
+        TextView price = (TextView) view.findViewById(R.id.price_textview);
+        Button saleButton = (Button) view.findViewById(R.id.sale_button);
         currentQuantity = (TextView) view.findViewById(R.id.current_quantity_textview);
-        price = (TextView) view.findViewById(R.id.price_textview);
-        saleButton = (Button) view.findViewById(R.id.sale_button);
 
         title.setText(cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_PRODUCT_NAME)));
         currentQuantity.setText(context.getString(R.string.in_stock_suffix, cursor.getString(cursor.getColumnIndex(ProductContract.ProductEntry.COLUMN_CURRENT_QUANTITY))));

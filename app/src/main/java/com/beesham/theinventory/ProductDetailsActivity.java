@@ -7,12 +7,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
-import android.support.v4.content.FileProvider;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +18,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -31,15 +28,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.beesham.theinventory.data.ProductContract;
-import com.beesham.theinventory.data.ProductDbHelper;
-
-import org.w3c.dom.Text;
-
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ProductDetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -132,7 +121,8 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
             @Override
             public void onClick(View view) {
                 if(!mCurrentQuantityEdittext.getText().toString().isEmpty()) {
-                    mCurrentQuantityEdittext.setText(Integer.toString(Integer.parseInt(mCurrentQuantityEdittext.getText().toString()) + 1));
+                    int quantity = Integer.parseInt(mCurrentQuantityEdittext.getText().toString()) + 1;
+                    mCurrentQuantityEdittext.setText(Integer.toString(quantity));
                 }else{
                     mCurrentQuantityEdittext.setText(Integer.toString(1));
                 }
@@ -262,7 +252,6 @@ public class ProductDetailsActivity extends AppCompatActivity implements LoaderM
 
         showUnsavedChangesDialog(discardButtonClickListener);
     }
-
 
     private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
